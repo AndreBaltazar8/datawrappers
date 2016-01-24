@@ -19,13 +19,13 @@ class DataWrapper extends Wrapper {
     }
 
     public function setValue($value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $this->parent->set($this->key, $value);
         return $this;
     }
 
     public function setValueRef(&$value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $this->parent->setRef($this->key, $value);
         return $this;
     }

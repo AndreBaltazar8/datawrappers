@@ -10,13 +10,13 @@ class ValueWrapperRef extends Wrapper {
     }
 
     public function setValue($value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $this->ref = $value;
         return $this;
     }
 
     public function setValueRef(&$value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $this->ref = &$value;
         return $this;
     }

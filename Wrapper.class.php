@@ -26,7 +26,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function has($value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data != null && is_array($data))
             return in_array($value, $data);
@@ -34,7 +34,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function set($key, $value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
             $data = array();
@@ -46,7 +46,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function setRef($key, &$value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
             $data = array();
@@ -58,7 +58,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function push($value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
             $data = array();
@@ -70,7 +70,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function pushRef(&$value) {
-        $this->unwrapValue($value);
+        static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
             $data = array();
@@ -82,7 +82,7 @@ abstract class Wrapper implements IteratorAggregate {
     }
 
     public function &get($key, $default = null) {
-        $this->unwrapValue($default);
+        static::unwrapValue($default);
         $data = &$this->getValue();
         if ($data == null || !array_key_exists($key, $data))
             return $default;
@@ -112,7 +112,35 @@ abstract class Wrapper implements IteratorAggregate {
         }, $this);
     }
 
-    protected function unwrapValue(&$value) {
+    public function filter($callback) {
+        $data = &$this->getValue();
+        if ($data != null && is_array($data))
+            $toFilter = &$data;
+        else
+            $toFilter = array($data);
+
+        return new ValueWrapper(array_filter($toFilter, function($value, $key) use ($callback) {
+            return $callback($key, $value, new DataWrapper($this, $key), new ValueWrapperRef($value));
+        }, ARRAY_FILTER_USE_BOTH));
+    }
+
+    public function map($callback) {
+        $data = &$this->getValue();
+        if ($data != null && is_array($data))
+            $toMap = &$data;
+        else
+            $toMap = array($data);
+
+        $mapped = new ValueWrapper(array());
+        foreach($toMap as $key => $value) {
+            $mappedVal = $callback($key, $value, new DataWrapper($this, $key), new ValueWrapperRef($value));
+            static::unwrapValue($mappedVal);
+            $mapped->push($mappedVal);
+        }
+        return $mapped;
+    }
+
+    protected static function unwrapValue(&$value) {
         if ($value != null && is_object($value) && is_subclass_of($value, 'Wrapper'))
             $value = $value->getValue();
     }
