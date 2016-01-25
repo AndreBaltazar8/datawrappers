@@ -33,7 +33,7 @@ abstract class Wrapper implements IteratorAggregate {
         return false;
     }
 
-    public function set($key, $value) {
+    public function set($key, $value, $returnRaw = false) {
         static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
@@ -42,10 +42,12 @@ abstract class Wrapper implements IteratorAggregate {
             $this->setValue($data);
         } else
             $data[$key] = $value;
+        if ($returnRaw)
+            return $data;
         return $this;
     }
 
-    public function setRef($key, &$value) {
+    public function setRef($key, &$value, $returnRaw = false) {
         static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
@@ -54,10 +56,12 @@ abstract class Wrapper implements IteratorAggregate {
             $this->setValue($data);
         } else
             $data[$key] = &$value;
+        if ($returnRaw)
+            return $data;
         return $this;
     }
 
-    public function push($value) {
+    public function push($value, $returnRaw = false) {
         static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
@@ -66,10 +70,12 @@ abstract class Wrapper implements IteratorAggregate {
             $this->setValue($data);
         } else
             $data[] = $value;
+        if ($returnRaw)
+            return $data;
         return $this;
     }
 
-    public function pushRef(&$value) {
+    public function pushRef(&$value, $returnRaw = false) {
         static::unwrapValue($value);
         $data = &$this->getValue();
         if ($data == null || !is_array($data)) {
@@ -78,6 +84,8 @@ abstract class Wrapper implements IteratorAggregate {
             $this->setValue($data);
         } else
             $data[] = &$value;
+        if ($returnRaw)
+            return $data;
         return $this;
     }
 

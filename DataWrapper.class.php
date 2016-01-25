@@ -30,6 +30,34 @@ class DataWrapper extends Wrapper {
         return $this;
     }
 
+    public function set($key, $value, $returnRaw = false) {
+        $data = parent::set($key, $value, $this->setParent || $returnRaw);
+        if ($this->setParent)
+            $this->parent->set($this->key, $data);
+        return $data;
+    }
+
+    public function setRef($key, &$value, $returnRaw = false) {
+        $data = parent::setRef($key, $value, $this->setParent || $returnRaw);
+        if ($this->setParent)
+            $this->parent->set($this->key, $data);
+        return $data;
+    }
+
+    public function push($value, $returnRaw = false) {
+        $data = parent::push($value, $this->setParent || $returnRaw);
+        if ($this->setParent)
+            $this->parent->set($this->key, $data);
+        return $data;
+    }
+
+    public function pushRef(&$value, $returnRaw = false) {
+        $data = parent::pushRef($value, $this->setParent || $returnRaw);
+        if ($this->setParent)
+            $this->parent->set($this->key, $data);
+        return $data;
+    }
+
     public function getWrapped($key, $create = true, $setParent = false) {
         return parent::getWrapped($key, $create, $this->setParent || $setParent);
     }
