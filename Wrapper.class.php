@@ -97,10 +97,13 @@ abstract class Wrapper implements IteratorAggregate {
         return $data[$key];
     }
 
-    public function delete($key) {
+    public function delete($key, $returnRaw = false) {
         $data = &$this->getValue();
         if (is_array($data) && array_key_exists($key, $data))
             unset($data[$key]);
+        if ($returnRaw)
+            return $data;
+        return $this;
     }
 
     public function getWrapped($key, $create = true, $setParent = false) {

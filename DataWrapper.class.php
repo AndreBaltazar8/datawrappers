@@ -58,6 +58,13 @@ class DataWrapper extends Wrapper {
         return $data;
     }
 
+    public function delete($key, $returnRaw = false) {
+        $data = parent::delete($key, $this->setParent || $returnRaw);
+        if ($this->setParent)
+            $this->parent->set($this->key, $data);
+        return $data;
+    }
+
     public function getWrapped($key, $create = true, $setParent = false) {
         return parent::getWrapped($key, $create, $this->setParent || $setParent);
     }
