@@ -148,6 +148,20 @@ abstract class Wrapper implements IteratorAggregate {
         return $mapped;
     }
 
+    public function sort($callback) {
+        $data = &$this->getValue();
+        if ($data != null && is_array($data))
+            $toSort = $data;
+        else
+            $toSort = array($data);
+
+        usort($toSort, function($v1, $v2) use ($callback) {
+            return $callback(new ValueWrapperRef($v1), new ValueWrapperRef($v2));
+        });
+
+        return new ValueWrapper($toSort);
+    }
+
     protected static function unwrapValue(&$value) {
         if ($value != null && is_object($value) && is_subclass_of($value, 'Wrapper'))
             $value = $value->getValue();
