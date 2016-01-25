@@ -135,7 +135,7 @@ abstract class Wrapper implements IteratorAggregate {
         foreach($toMap as $key => $value) {
             $mappedVal = $callback($key, $value, new DataWrapper($this, $key), new ValueWrapperRef($value));
             static::unwrapValue($mappedVal);
-            $mapped->push($mappedVal);
+            $mapped->set($key, $mappedVal);
         }
         return $mapped;
     }
